@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>hashload .: sample</title>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+        <script type="text/javascript" src="js/jquery-1.6.3.min.js"></script>
+        <script type="text/javascript" src="js/hashload-1.1.0.min.js"></script>
+        <script type="text/javascript">
+            $(function(){
+                // Adding rules for the callbacks, there are two types of the rules:
+                // - ajax-rules
+                // - simple-callback rules
+                // The difference is in how they are created and executed
+                
+                // ajax-rules
+                // Often hash change events are associated with some kind of ajax-calls that reload parts of the page
+                // the user's browsing, to register such a rule you may need to specify a pattern, a callback, and then
+                // the part for the AJAX call: URL, method (GET or POST) and the params (as an object) - the latter
+                // two here may be omitted, in that case Hashload will use the 'get' and {} accordingly
+                // Once the call has been executed the callback is called and received data is passed to it
+                window.hashload.addRule(/ajax\-callback/i, function(data) {alert('Got the result via AJAX')}, window.location.href, 'get')
+                
+                // simple-callback rules
+                // When a hash change event means that you may need to execute a callback and nothing more, this variant
+                // may be used. To create a simple-callback rule you need to specify a pattern to validate your hash against
+                // and a callback to execute. The callback receives the updated event object in that case
+                window.hashload.addRule(/simple\-callback/i, function(event) {alert('Executing a simple callback')})
+                
+                // Hashload starts capturing events after either init or run (its alias) method is called
+                window.hl.run()
+            })
+        </script>
+    </head>
+    <body>
+        <header>
+            <h1>hashload .: sample</h1>
+        </header>
+        <section>
+            <p>Welcome to the Hashload project sample, please make sure you run it on a server otherwise it will not work correct.</p>
+            <ul>
+                <li><a href="#/simple-callback" title="Simple callback test">Simple callback test</a></li>
+                <li><a href="#/ajax-callback" title="AJAX callback test">AJAX callback test</a></li>
+            </ul>     
+            <p><strong>Note:</strong> please view the source code for examples</p>
+        </section>
+        <footer>
+            <p>&copy 2011 Ivan Kot</p>
+        </footer>
+    </body>
+</html>

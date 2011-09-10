@@ -1,0 +1,152 @@
+Hashload JavaScript library
+(c) 2011 Ivan Kot, released under the MIT
+
+This library allows to handle the hashchange event easily in multiple browsers
+including IE7+, FF3.6+, Safari, Chrome 6+, Opera 10.6+. In a nutshell, it 
+provides an API that allows a developer to assign callbacks to certain hashes, 
+identified by rules. Also, the library is integrated with jQuery to perform
+AJAX calls for ajax-based rules automatically and pass the result to callbacks.
+
+USAGE:
+1. Download the source (either development or minified version)
+2. Include the file into a page using the script tag:
+
+    <script type="text/javascript" src="js/hashload-1.1.0.min.js"></script>
+
+3. Additionally, you may need to include jQuery to perform AJAX requests
+
+    <script type="text/javascript" src="js/jquery-1.6.3.min.js"></script>
+
+4. After inclusion Hashloads automatically registers itself within the window
+object and is accessible via the following calls:
+
+    window.hashload
+    window.Hashload
+    window.hl
+
+All of those are equivalent.
+5. Once registered it is time to configure Hashload and setup rules for hash
+changes (see section below)
+6. Finally, you need to call the init (or run) method to start Hashload
+    
+    window.hashload.run()
+
+CONFIGURATION:
+There are several options that may be configured:
+1. Default handler - this is a function that will be called for all hash 
+changes that are made while the page is opened, unless the skipDefaultHandler
+option is set to true (see below). To setup a custom default handler use:
+    
+    window.hashload.setDefaultHandler(function(event) {})
+
+The callback receives the event object as the only argument. To reset the 
+handler to its default value (a function that does nothing) use the following 
+method:
+
+    window.hashload.resetDefaultHandler()
+
+2. Skip default handler - it is possible to either skip the default handler once
+or disable it completely. In the first case, use:
+
+    window.hashload.skipDefaultHandler()
+
+In the other one:
+
+    window.hashload.setCallDefaultHeader(false)
+
+3. Pre-dispatch callback - sometimes you may either need to alter parameters or
+process the input before an AJAX or simple-callback call is performed. For that
+purpose Hashload has the Pre-dispatch callback, in order to setup which you may
+need to call:
+
+    window.hashload.setPreDispatchCallback(function(event) {})
+
+This function receives the event object and has a unique opportunity to alter 
+the params object that will then be passed to the AJAX call, to update the 
+object simply put the new version to
+
+    event.params = {newParam: "newValue"}
+
+IMPORTANT: make sure you return the event object in the Pre-dispatch callback or
+it will not work correctly other wise, so always include the following line
+
+    return event
+
+into the callback.
+To reset the callback to its initial value call:
+
+    window.hashload.resetPreDispatchCallback()
+
+RULES MANAGEMENT:
+1. Adding a rule. In order to make Hashload work you may need to specify a set 
+of rules, each based on a specific (RegExp) pattern that will be used to 
+identify a hash change. There are two types of rules: 
+    AJAX-based rules;
+    simple-callback-based rules.
+
+AJAX-based rules mean that before a callback is executed an AJAX call needs to 
+be performed, for that purpose Hashload integrates with jQuery that handles the
+calls itself providing the result (i.e. if you don't need this in your app - 
+you may not attach jQuery to your pages). To add an AJAX-based call use:
+
+    window.hashload.addRule(/regexp pattern/i, callback, url, method, params)
+
+method and params are optional, the defaults are:
+    method: "get"
+    params: {}
+
+The callback function will receive the data as its only argument, so one may 
+look like the following:
+
+    function(data) {console.log(data)}
+
+Simple-callback-based rules are used when there is no need to make an AJAX call
+after a hash change or if a developer would like to execute it manually. To add
+a simple-callback rule you may need to call the same addRule method with the 
+following parameters:
+
+    window.hashload.addRule(/regexp pattern/i, callback)
+
+Please note that url in that case is NOT specified, that's how the library 
+determines the type of a rule. The callback here will receive the event object 
+as its only argument, so it may look like that:
+
+    function(event) {alert(event.hash)}
+
+2. Removing a rule. Sometimes you may need to remove a previously created rule 
+in the runtime, to do that you may use the following method:
+
+    window.hashload.removeRule(/regexp pattern/i)
+
+After that the library will remove all of the rules that match the pattern 
+specified.
+
+3. Replacing a rule, simple as it:
+
+    window.hashload.replaceRule(pattern, callback, url, method, params)
+
+This will replace all rules that match the pattern with a new one that has
+the same pattern but different parameters.
+
+EVENT OBJECT:
+The event object that is used within the library and passed to the callbacks has
+several additional fields that contain some useful information, the list is:
+    hash - field that has the new hash stored in it;
+    params - the parameters object that may be altered in the Pre-dispatch 
+callback.
+
+AN EXAMPLE
+Below is a sample script that may be used to outline some of the basic features
+provided by the library:
+
+    <script type="text/javascript" src="js/jquery-1.6.3.min.js"></script>
+    <script type="text/javascript" src="js/hashload-1.1.0.min.js"></script>
+    <script type="text/javascript">
+    $(function(){
+        window.hl.addRule(/photo\/cloud(\d)*$/i, function(data) {console.log(data)}, '/apc.php', 'get')
+        window.hl.addRule(/test/i, function(event) {console.log(event.hash)})
+        window.hl.run()
+    })
+    </script>
+
+For additional information please see the sample folder.
