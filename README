@@ -1,33 +1,31 @@
 Hashload JavaScript library
 (c) 2011 Ivan Kot, released under the MIT
 
-This library allows to handle the hashchange event easily in multiple browsers
-including IE7+, FF3.6+, Safari, Chrome 6+, Opera 10.6+. In a nutshell, it 
-provides an API that allows a developer to assign callbacks to certain hashes, 
-identified by rules. Also, the library is integrated with jQuery to perform
-AJAX calls for ajax-based rules automatically and pass the result to callbacks.
+The library allows to easily handle the hashchange event in multiple browsers,
+including IE7+, FF3.6+, Safari, Chrome 6+, Opera 10.6+. In a nutshell, the lib 
+provides an API that may be used by a developer to assign callbacks to certain 
+hash addresses by specifying a RegExp based rule for each of those. 
+Additionally, the library is capable of performing AJAX calls for the 
+corresponding (ajax-based) rules and passing received data to the associated 
+callbacks. The library has no dependencies.
 
 USAGE:
 1. Download the source (either development or minified version)
 2. Include the file into a page using the script tag:
 
-    <script type="text/javascript" src="js/hashload-1.1.0.min.js"></script>
+    <script type="text/javascript" src="js/hashload-1.2.0.min.js"></script>
 
-3. Additionally, you may need to include jQuery to perform AJAX requests
-
-    <script type="text/javascript" src="js/jquery-1.6.3.min.js"></script>
-
-4. After inclusion Hashloads automatically registers itself within the window
-object and is accessible via the following calls:
+3. After the inclusion Hashloads automatically registers itself within the 
+window object and is accessible via the following calls:
 
     window.hashload
     window.Hashload
     window.hl
 
 All of those are equivalent.
-5. Once registered it is time to configure Hashload and setup rules for hash
+4. Once registered it is time to configure Hashload and setup rules for hash
 changes (see section below)
-6. Finally, you need to call the init (or run) method to start Hashload
+5. Finally, you need to call the init (or run) method to start Hashload
     
     window.hashload.run()
 
@@ -131,15 +129,16 @@ the same pattern but different parameters.
 EVENT OBJECT:
 The event object that is used within the library and passed to the callbacks has
 several additional fields that contain some useful information, the list is:
+
     hash - field that has the new hash stored in it;
     params - the parameters object that may be altered in the Pre-dispatch 
+
 callback.
 
 AN EXAMPLE
 Below is a sample script that may be used to outline some of the basic features
 provided by the library:
 
-    <script type="text/javascript" src="js/jquery-1.6.3.min.js"></script>
     <script type="text/javascript" src="js/hashload-1.1.0.min.js"></script>
     <script type="text/javascript">
     $(function(){
