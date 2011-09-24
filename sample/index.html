@@ -4,9 +4,9 @@
         <title>hashload .: sample</title>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
         <script type="text/javascript" src="js/jquery-1.6.3.min.js"></script>
-        <script type="text/javascript" src="js/hashload-1.1.0.min.js"></script>
+        <script type="text/javascript" src="js/hashload-latest.min.js"></script>
         <script type="text/javascript">
-            $(function(){
+            $(function(){             
                 // Adding rules for the callbacks, there are two types of the rules:
                 // - ajax-rules
                 // - simple-callback rules
@@ -18,6 +18,7 @@
                 // the part for the AJAX call: URL, method (GET or POST) and the params (as an object) - the latter
                 // two here may be omitted, in that case Hashload will use the 'get' and {} accordingly
                 // Once the call has been executed the callback is called and received data is passed to it
+                // NOTE: Starting from version 1.2.0 jQuery is no longer needed to process the ajax-rules
                 window.hashload.addRule(/ajax\-callback/i, function(data) {alert('Got the result via AJAX')}, window.location.href, 'get')
                 
                 // simple-callback rules
