@@ -1,6 +1,6 @@
 /*
  * Hashload
- * Version: 1.1.0
+ * Version: 1.2.0
  * Description: allows to handle hash change events easily in different browsers
  * including FF 3.6+, Opara 10.6+, Chrome 6+, IE7+
  * 
@@ -81,6 +81,74 @@
             return event
         }
     }
+    var AjaxContainer = function() {
+        this.success = function(xhr, data, textStatus) {}
+        this.error = function(xhr, textStatus, errorThrown) {}
+        this.complete = function(xhr, textStatus) {}
+        this._xhr = null
+        this._serializedData = null
+    }
+    AjaxContainer.prototype = {
+        constructor: AjaxContainer,
+        _types: ["get","post"],
+        ajax: function(options) {
+            if (!options || typeof options != "object") {
+                throw new Error("Options should be an object")
+            }
+            options.async = options.async || true
+            options.url = options.url || window.location.href
+            this._serialize(options.data)
+            if (options.success && typeof options.success == "function") {
+                this.success = options.success
+            }
+            if (options.error && typeof options.error == "function") {
+                this.error = options.error
+            }
+            if (options.complete && typeof options.complete == "function") {
+                this.complete = options.complete
+            }
+            options.type = (options.type && typeof options.type == "string" && -1 != this._types.indexOf(options.type.toLowerCase())) 
+                ? options.type.toLowerCase() 
+                : "get" 
+            this._executeAjaxCall(options)
+        },
+        _executeAjaxCall: function(options) {
+            var xhr = this._xhr = this._xhr || new XMLHttpRequest()
+            var self = this
+            xhr.onreadystatechange = function() {
+                if (4 == xhr.readyState) {
+                    var status = xhr.statusText || xhr.status
+                    self.complete.call(self, xhr, status)
+                    switch (xhr.status) {
+                        case 200:
+                            self.success.call(self, xhr.responseText, status, xhr)
+                            break;
+                        default:
+                            self.error.call(self, status, "")
+                            break;
+                    }
+                }
+            }
+            xhr.open(options.type, options.url, options.async)
+            if ("post" == options.type) {
+                xhr.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+                xhr.setRequestHeader("Content-length", this._serializedData.length);
+                xhr.setRequestHeader("Connection", "close");
+            }
+            xhr.send(this._serializedData)
+        },
+        _serialize: function(data) {
+            this._serializedData = (data) ? "" : null
+            if (data) {
+                for (var field in data) {
+                    if (this._serializedData.length) {
+                        this._serializedData += "&"
+                    }
+                    this._serializedData += field + "=" + data[field]
+                }
+            }
+        }
+    }
     var Rule = function(pattern, callback, url, method, params) {
         if (!pattern || (!pattern instanceof RegExp && typeof pattern != "string")) {
             throw new Error("Pattern has to be either a RegExp object or a string")
@@ -120,19 +188,19 @@
             if (this.url) {
                 var self = this
                 this.params = event.params ? event.params : this.params;
-                jQuery.ajax({
+                this.getContainer().ajax({
                     url: this.url,
                     data: this.params,
-                    success: function(data, textStatus, jqXHR) {
+                    success: function(data, textStatus, xhr) {
                         self.callback.apply(this, arguments)
                         },
-                    error: function(jqXHR, textStatus, errorThrown) {
+                    error: function(xhr, textStatus, errorThrown) {
                         self.errorCallback.apply(this, arguments)
                         },
-                    complete: function(jqXHR, textStatus) {
+                    complete: function(xhr, textStatus) {
                         self.completeCallback.apply(this, arguments)
                         },
-                    type: this.method
+                    type: this.method 
                 })
             } else {
                 this.callback(event)
@@ -145,6 +213,9 @@
         setCompleteCallback: function(callback) {
             this._validateCallback(callback)
             this.completeCallback = callback
+        },
+        getContainer: function() {
+            return new AjaxContainer()
         },
         _validateCallback: function(callback) {
             if (!callback || typeof callback != "function") {
