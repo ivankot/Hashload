@@ -33,7 +33,6 @@
                     return index
                 }
             }
-            return -1;
         }
     }
     var EventManager = function() {}
