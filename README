@@ -83,9 +83,9 @@ identify a hash change. There are two types of rules:
     simple-callback-based rules.
 
 AJAX-based rules mean that before a callback is executed an AJAX call needs to 
-be performed, for that purpose Hashload integrates with jQuery that handles the
-calls itself providing the result (i.e. if you don't need this in your app - 
-you may not attach jQuery to your pages). To add an AJAX-based call use:
+be performed, for that purpose Hashload has its own AjaxManager component or 
+integrates with jQuery if it's available, i.e. if you don't need to handle that 
+by yourself when creating you application. To add an AJAX-based call use:
 
     window.hashload.addRule(/regexp pattern/i, callback, url, method, params)
 
